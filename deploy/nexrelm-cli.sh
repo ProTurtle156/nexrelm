@@ -187,8 +187,10 @@ cmd_uninstall() {
 cmd_doctor() {
   local dd port; dd="$(data_dir)"; port="$(svc_port)"
   say "${B}Nexrelm doctor${NC}"
-  local nv; nv="$(node -v 2>/dev/null || echo none)"
-  [ "${nv#v}" ] && [ "$(node -p 'process.versions.node.split(".")[0]' 2>/dev/null||echo 0)" -ge 20 ] && ok "node $nv" || bad "node $nv (need 20+)"
+  local nv nmaj nmin; nv="$(node -v 2>/dev/null || echo none)"
+  nmaj="$(node -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo 0)"
+  nmin="$(node -p 'process.versions.node.split(".")[1]' 2>/dev/null || echo 0)"
+  if [ "$nmaj" -gt 22 ] || { [ "$nmaj" -eq 22 ] && [ "$nmin" -ge 5 ]; }; then ok "node $nv"; else bad "node $nv (need 22.5+ for node:sqlite)"; fi
   [ -x "$TSX" ] && ok "tsx present" || bad "tsx missing — run sudo nexrelm rebuild"
   systemctl is-active --quiet "$SERVICE" && ok "control plane active" || bad "control plane inactive — sudo nexrelm start"
   systemctl is-active --quiet nexrelm-web 2>/dev/null && ok "web GUI active" || bad "web GUI inactive (or managed elsewhere)"

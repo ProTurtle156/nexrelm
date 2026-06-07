@@ -59,10 +59,18 @@ NEXRELM_DATA="$NEXRELM_HOME/.nexrelm"
 # render a systemd unit template (User/Group/WorkingDirectory) for this host
 render_unit() { sed -e "s#__NEXRELM_USER__#$NEXRELM_USER#g" -e "s#__NEXRELM_GROUP__#$NEXRELM_GROUP#g" -e "s#__NEXRELM_DIR__#$REPO_DIR#g" "$1" > "$2"; }
 
-command -v node >/dev/null 2>&1 || die "node not found" "install Node.js 20+ and retry"
+command -v node >/dev/null 2>&1 || die "node not found" "install Node.js 22.5+ and retry — see README 'Install dependencies'"
 command -v npm  >/dev/null 2>&1 || die "npm not found" "install npm and retry"
+# Nexrelm stores data in Node's built-in node:sqlite, which lands in Node 22.5.0
+# (behind --experimental-sqlite). Earlier Node has no SQLite module at all, so the
+# control plane cannot start — reject it here with an upgrade path instead of
+# installing a broken service.
 NODE_MAJOR="$(node -p 'process.versions.node.split(".")[0]')"
-[ "$NODE_MAJOR" -ge 20 ] || die "Node $NODE_MAJOR is too old" "Nexrelm needs Node 20+ (uses --experimental-sqlite)"
+NODE_MINOR="$(node -p 'process.versions.node.split(".")[1]')"
+if [ "$NODE_MAJOR" -lt 22 ] || { [ "$NODE_MAJOR" -eq 22 ] && [ "$NODE_MINOR" -lt 5 ]; }; then
+  die "Node $(node -v) is too old — Nexrelm needs Node 22.5+ (built-in node:sqlite)" \
+      "Debian/Ubuntu/Kali: curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash - && sudo apt-get install -y nodejs | Fedora/RHEL: sudo dnf module reset -y nodejs && sudo dnf module enable -y nodejs:22 && sudo dnf install -y nodejs npm"
+fi
 command -v runuser >/dev/null 2>&1 || die "runuser not found" "install util-linux"
 
 LANIP="$(ip -4 -o addr show scope global 2>/dev/null | awk '{print $4}' | cut -d/ -f1 | grep -vE '^(127\.|169\.254\.)' | head -1)"
