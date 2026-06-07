@@ -78,8 +78,37 @@ Live module state, **data-retention controls** (per-database windows, enforced h
 ## Requirements
 
 - **Linux** host with systemd (bare-metal) **or Docker**
-- **Node.js 20+** and npm (bare-metal)
-- `openssl` (TLS) and `iproute2` (network detection); optional `nmap` + `tcpdump` for scanning/capture
+- **Node.js 22.5+** and npm — the control plane uses Node's built-in `node:sqlite` (`--experimental-sqlite`), which requires Node **22.5 or newer**
+- **Core tools:** `git`, `curl`, `openssl` (TLS certs), `iproute2` (LAN detection), `libcap` (`setcap`/`getcap` — lets the resolver bind `:53` and lets scanners use raw sockets without root)
+- **Optional, per feature:** `nmap` (Security scans), `tcpdump` (packet capture), `nftables` (Gateway / NAT mode)
+
+### Install dependencies
+
+**Debian / Ubuntu / Raspberry Pi OS (`apt`)**
+
+```bash
+# Node.js 22.x — skip if `node -v` already reports v22.5 or newer
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# core + optional tooling
+sudo apt-get install -y git curl openssl iproute2 libcap2-bin \
+                        nmap tcpdump nftables
+```
+
+**Fedora / RHEL / Rocky / Alma (`dnf`)**
+
+```bash
+# Node.js 22 — Fedora 40+ ships v22; on RHEL/Rocky/Alma enable the stream first:
+#   sudo dnf module enable -y nodejs:22
+sudo dnf install -y nodejs npm
+
+# core + optional tooling
+sudo dnf install -y git curl openssl iproute libcap \
+                    nmap tcpdump nftables
+```
+
+> `libcap2-bin` (apt) / `libcap` (dnf) provide `setcap`/`getcap`. `nmap`, `tcpdump`, and `nftables` are only needed for the Security, packet-capture, and Gateway features — install just the ones you use. Everything else (DNS, DHCP, Directory, Virtualization) runs with the core tools alone.
 
 ## Install
 
