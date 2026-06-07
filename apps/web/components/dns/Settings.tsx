@@ -179,7 +179,7 @@ export function Settings() {
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-3">
           <span className="label w-28">Bind address</span>
-          <Text value={d.bindAddress} onChange={(v) => set('bindAddress', v)} placeholder="192.168.1.177" w="w-44" />
+          <Text value={d.bindAddress} onChange={(v) => set('bindAddress', v)} placeholder="192.168.1.2" w="w-44" />
           <span className="label">Port</span>
           <Num value={d.port} onChange={(v) => set('port', v)} w="w-20" />
           <span className="label">Iface</span>

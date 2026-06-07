@@ -74,8 +74,8 @@ export function Settings() {
       </Panel>
 
       <Section title="Server binding" desc="which address/interface the server answers on">
-        <Row label="Server IP" hint="option 054 / siaddr"><input value={d.serverIp} onChange={(e) => set('serverIp', e.target.value)} placeholder="192.168.1.177" className={cls + ' w-44'} /></Row>
-        <Row label="Interface" hint="optional"><input value={d.iface} onChange={(e) => set('iface', e.target.value)} placeholder="wlp0s20f3" className={cls + ' w-44'} /></Row>
+        <Row label="Server IP" hint="option 054 / siaddr"><input value={d.serverIp} onChange={(e) => set('serverIp', e.target.value)} placeholder="192.168.1.2" className={cls + ' w-44'} /></Row>
+        <Row label="Interface" hint="optional"><input value={d.iface} onChange={(e) => set('iface', e.target.value)} placeholder="eth0" className={cls + ' w-44'} /></Row>
         <Row label="UDP port"><input type="number" value={d.port} onChange={(e) => set('port', Number(e.target.value))} className={cls + ' w-24'} /></Row>
       </Section>
 
