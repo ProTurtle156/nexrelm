@@ -1,0 +1,25 @@
+# Nexrelm web GUI (Next.js) — system service TEMPLATE. Serves the production
+# build on :3007, independent of any external process manager. The installer
+# (deploy/install-nexrelm.sh) renders __PLACEHOLDERS__ and a production build for
+# your host; to install by hand, replace them and `npm run build --workspace apps/web` first.
+# Logs: journalctl -u nexrelm-web -f
+[Unit]
+Description=Nexrelm web GUI (Next.js)
+After=network-online.target nexrelm-control-plane.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=__NEXRELM_USER__
+Group=__NEXRELM_GROUP__
+WorkingDirectory=__NEXRELM_DIR__
+Environment=NODE_ENV=production
+# Where the browser reaches the control plane (baked into the GUI at build time).
+# For a reverse-proxy / single-origin deploy set this to your public https origin.
+# Environment=NEXT_PUBLIC_API_URL=https://nexrelm.example:8787
+ExecStart=/usr/bin/npm run start:web
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

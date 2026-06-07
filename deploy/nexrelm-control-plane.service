@@ -1,0 +1,36 @@
+# Nexrelm control plane + DNS resolver — system service TEMPLATE.
+# The installer (deploy/install-nexrelm.sh) renders __PLACEHOLDERS__ for your
+# host. To install by hand, replace them and copy to /etc/systemd/system/.
+# Grants CAP_NET_BIND_SERVICE so the resolver can bind :53 as a non-root user.
+# Logs: journalctl -u nexrelm-control-plane -f
+[Unit]
+Description=Nexrelm control plane (REST + WebSocket + DNS resolver)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=__NEXRELM_USER__
+Group=__NEXRELM_GROUP__
+WorkingDirectory=__NEXRELM_DIR__
+# REST/WS port + DNS resolver port. The resolver auto-detects the LAN IP it binds
+# on :53. Edit upstreams/lists/bind from the GUI afterwards.
+Environment=PORT=8787
+Environment=HOST=0.0.0.0
+Environment=DNS_PORT=53
+Environment=NODE_OPTIONS=--experimental-sqlite
+# Uncomment to pin the resolver to a specific interface IP (otherwise auto-detected):
+# Environment=DNS_BIND=192.168.1.2
+ExecStart=/usr/bin/npm run start:api
+Restart=on-failure
+RestartSec=3
+# CAP_NET_BIND_SERVICE: bind :53 as non-root. The bounding set must also permit
+# CAP_NET_RAW + CAP_NET_ADMIN so file-capped helpers (nmap -sS/-O/-PE, tcpdump)
+# spawned by the control plane can actually use raw sockets — the bounding set
+# masks any capability a child holds. NoNewPrivileges must stay OFF for those
+# file caps to take effect.
+AmbientCapabilities=CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_NET_ADMIN
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE CAP_NET_RAW CAP_NET_ADMIN
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,29 @@
+# Nexrelm GUI — Next.js 14. Build context is the repo root:
+#   docker build -f deploy/Dockerfile.web ..
+FROM node:22-alpine
+
+WORKDIR /app
+
+# Workspace deps.
+COPY package.json package-lock.json* ./
+COPY packages/types/package.json packages/types/package.json
+COPY apps/web/package.json apps/web/package.json
+COPY apps/control-plane/package.json apps/control-plane/package.json
+RUN npm install --include=dev
+
+# Shared contract + the web app.
+COPY tsconfig.base.json ./
+COPY packages/types packages/types
+COPY apps/web apps/web
+
+# Public env is inlined at build time.
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_WS_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_WS_URL=$NEXT_PUBLIC_WS_URL
+
+RUN npm run build
+ENV NODE_ENV=production
+
+EXPOSE 3007
+CMD ["npm", "run", "start:web"]

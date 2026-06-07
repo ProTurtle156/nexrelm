@@ -1,0 +1,39 @@
+<svg width="960" height="240" viewBox="0 0 960 240" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="NEXRELM — one nexus for every realm of your network">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="960" y2="240" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0a0f14"/>
+      <stop offset="1" stop-color="#0d1620"/>
+    </linearGradient>
+    <linearGradient id="nx" x1="40" y1="60" x2="170" y2="190" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6fe0ef"/>
+      <stop offset="1" stop-color="#2f9fc4"/>
+    </linearGradient>
+    <linearGradient id="word" x1="250" y1="0" x2="820" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#eaf6f9"/>
+      <stop offset="1" stop-color="#7fd6e6"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="760" cy="40" r="420" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2f9fc4" stop-opacity="0.20"/>
+      <stop offset="1" stop-color="#2f9fc4" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0 H0 V32" fill="none" stroke="#6fe0ef" stroke-opacity="0.05" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="960" height="240" rx="18" fill="url(#bg)"/>
+  <rect width="960" height="240" rx="18" fill="url(#grid)"/>
+  <rect width="960" height="240" rx="18" fill="url(#halo)"/>
+
+  <!-- mark -->
+  <g transform="translate(60,55)">
+    <path d="M65 6 L120 38 V102 L65 134 L10 102 V38 Z" fill="#0c1116" stroke="url(#nx)" stroke-width="4.5" stroke-linejoin="round"/>
+    <path d="M47 102 V50 L83 102 V50" fill="none" stroke="url(#nx)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="47" cy="50" r="4.8" fill="#6fe0ef"/>
+    <circle cx="83" cy="102" r="4.8" fill="#6fe0ef"/>
+  </g>
+
+  <!-- wordmark -->
+  <text x="250" y="120" font-family="ui-monospace, 'JetBrains Mono', monospace" font-size="62" font-weight="700" letter-spacing="14" fill="url(#word)">NEXRELM</text>
+  <text x="252" y="158" font-family="ui-monospace, monospace" font-size="18" letter-spacing="3.5" fill="#7c8b97">one nexus · every realm</text>
+  <text x="252" y="190" font-family="ui-sans-serif, system-ui, sans-serif" font-size="16" fill="#5fbfd6">DNS · DHCP · Directory · Virtualization · Security · live map</text>
+</svg>

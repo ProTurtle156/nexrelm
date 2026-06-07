@@ -1,0 +1,32 @@
+{
+  "name": "nexrelm",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Open-source network control plane — one nexus for every realm of your network. DNS, DHCP, Directory, Virtualization, Topology and Security in a single dark-cyber pane of glass.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace apps/web",
+    "dev:web": "npm run dev --workspace apps/web",
+    "dev:api": "npm run dev --workspace apps/control-plane",
+    "dev:all": "concurrently -n web,api -c cyanBright,magentaBright \"npm:dev:web\" \"npm:dev:api\"",
+    "build": "npm run build --workspace apps/web",
+    "build:api": "npm run build --workspace apps/control-plane",
+    "start:web": "npm run start --workspace apps/web",
+    "start:api": "npm run start --workspace apps/control-plane",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "clean": "rm -rf apps/*/.next apps/*/dist node_modules/.cache",
+    "test": "npm run test --workspace apps/control-plane"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "typescript": "^5.5.4"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

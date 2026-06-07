@@ -1,0 +1,33 @@
+# Nexrelm reverse proxy (recommended production TLS) — Caddy.
+#
+# Terminates TLS once and serves the GUI + control plane under ONE origin, so
+# the browser, the REST API and the WebSocket all share https://<host> with no
+# CORS and no mixed content. Caddy auto-generates a local cert (or use your own).
+#
+#   1. Build the GUI with the matching public origin, e.g.:
+#        NEXT_PUBLIC_API_URL=https://nexrelm.local npm run build --workspace apps/web
+#   2. Run the web (:3007) and control plane (:8787) — the two systemd units.
+#   3. sudo caddy run --config deploy/Caddyfile     (or install Caddy as a service)
+#   4. Browse to https://nexrelm.local
+#
+# Replace nexrelm.local with your hostname/IP. `tls internal` issues a local CA
+# cert; swap for `tls you@example.com` to get a real Let's Encrypt cert if the
+# host is internet-reachable.
+
+nexrelm.local {
+	tls internal
+
+	# REST + WebSocket → control plane
+	@api path /api/* /ws
+	handle @api {
+		reverse_proxy 127.0.0.1:8787
+	}
+
+	# everything else → the Next.js GUI
+	handle {
+		reverse_proxy 127.0.0.1:3007
+	}
+
+	encode gzip zstd
+	header -Server
+}

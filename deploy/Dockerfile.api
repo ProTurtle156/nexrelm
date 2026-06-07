@@ -1,0 +1,30 @@
+# Nexrelm control plane — Fastify REST + WebSocket + DNS resolver (runs via tsx).
+# Build context is the repo root:  docker build -f deploy/Dockerfile.api -t nexrelm/control-plane ..
+FROM node:22-alpine
+
+WORKDIR /app
+ENV NODE_ENV=production
+# All persistent state (auth.json, *.db, settings, TLS certs) lives here — mount a volume.
+ENV NEXRELM_DATA=/data
+
+# openssl → `nexrelm gen-cert`; iproute2 → LAN/WAN detection for onboarding/DHCP.
+RUN apk add --no-cache openssl iproute2
+
+# Install workspace deps (need every package.json present for npm to link them).
+COPY package.json package-lock.json* ./
+COPY packages/types/package.json packages/types/package.json
+COPY apps/web/package.json apps/web/package.json
+COPY apps/control-plane/package.json apps/control-plane/package.json
+RUN npm install --include=dev
+
+# Source.
+COPY tsconfig.base.json ./
+COPY packages/types packages/types
+COPY apps/control-plane apps/control-plane
+
+RUN mkdir -p /data
+VOLUME /data
+EXPOSE 8787
+# First run leaves the API open until an admin exists. Create one with:
+#   docker compose exec control-plane npx tsx src/cli.ts setup
+CMD ["npm", "run", "start:api"]

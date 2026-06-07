@@ -1,0 +1,42 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# builds / caches
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+.cache/
+coverage/
+
+# environment
+.env
+.env.local
+.env.*.local
+
+# runtime data + secrets (never commit)
+data/
+.nexrelm/
+*.sqlite
+*.sqlite3
+*.db
+*.log
+*.pem
+*.key
+*.crt
+tls/
+.git-credentials
+
+# os / editor
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

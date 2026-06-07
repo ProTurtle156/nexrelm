@@ -1,0 +1,638 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Theme system. Every surface is driven by tokens, so a theme = a palette + a
+   set of stylistic knobs (radius, borders, shadow, glow, texture, fonts). The
+   <html> element carries data-theme (obsidian|brutalist|nord|solar|paper) and
+   data-mode (dark|light); :root is the default (obsidian · dark).
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root {
+  color-scheme: dark;
+
+  /* palette — obsidian · dark (the default): true black, clean, indigo accent */
+  --bg: #0a0a0b;
+  --bg-2: #050506;
+  --surface: oklch(20% 0.006 280 / 0.6);
+  --surface-2: oklch(24% 0.008 280 / 0.7);
+  --line: oklch(100% 0 0 / 0.08);
+  --line-strong: oklch(100% 0 0 / 0.16);
+  --text: oklch(97% 0.004 280);
+  --muted: oklch(72% 0.01 280);
+  --faint: oklch(52% 0.012 280);
+  --accent: oklch(72% 0.15 280);
+  --accent-dim: oklch(64% 0.13 280);
+  --accent-glow: oklch(72% 0.16 280 / 0.45);
+  --violet: oklch(72% 0.16 322);
+  --good: oklch(78% 0.16 158);
+  --warn: oklch(83% 0.15 82);
+  --danger: oklch(65% 0.2 22);
+
+  /* categorical chart palette — always 6 distinct hues, independent of the theme
+     accent (so legends never collide, e.g. brutalist's red accent vs red danger) */
+  --chart-1: #5b9dff;
+  --chart-2: #ff5470;
+  --chart-3: #38d39f;
+  --chart-4: #ffb454;
+  --chart-5: #b48cff;
+  --chart-6: #4dd9e0;
+
+  /* stylistic knobs */
+  --radius: 12px;
+  --radius-sm: 9px;
+  --border-w: 1px;
+  --panel-blur: 10px;
+  --shadow: 0 22px 50px -30px rgba(0, 0, 0, 0.9);
+  --glow: 0 0 24px -12px var(--accent-glow);
+  --grid-opacity: 0;
+  --bracket-opacity: 0;
+  --halo-opacity: 0.35;
+  --bracket-color: var(--line-strong);
+  --grad-from: var(--text);
+  --grad-to: var(--accent);
+
+  --font-body: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-display: ui-monospace, 'JetBrains Mono', 'Cascadia Code', 'SF Mono', 'Roboto Mono', Menlo, Consolas, monospace;
+}
+
+/* deeper categorical chart hues for any light theme (more contrast on light bg) */
+:root[data-mode='light'] {
+  --chart-1: #2563eb;
+  --chart-2: #dc2626;
+  --chart-3: #059669;
+  --chart-4: #d97706;
+  --chart-5: #7c3aed;
+  --chart-6: #0891b2;
+}
+
+/* ── OBSIDIAN · light ──────────────────────────────────────────────────────── */
+:root[data-theme='obsidian'][data-mode='light'] {
+  color-scheme: light;
+  --bg: #ffffff;
+  --bg-2: #f4f4f5;
+  --surface: oklch(100% 0 0 / 0.85);
+  --surface-2: oklch(97% 0.002 280 / 0.92);
+  --line: oklch(20% 0.01 280 / 0.1);
+  --line-strong: oklch(20% 0.02 280 / 0.18);
+  --text: oklch(22% 0.01 280);
+  --muted: oklch(46% 0.014 280);
+  --faint: oklch(62% 0.014 280);
+  --accent: oklch(54% 0.17 280);
+  --accent-dim: oklch(48% 0.15 280);
+  --accent-glow: oklch(54% 0.17 280 / 0.25);
+  --violet: oklch(54% 0.18 322);
+  --good: oklch(56% 0.16 158);
+  --warn: oklch(66% 0.14 72);
+  --danger: oklch(56% 0.2 25);
+  --shadow: 0 16px 38px -28px rgba(20, 20, 40, 0.22);
+  --halo-opacity: 0.25;
+}
+
+/* ── BRUTALIST · dark ──────────────────────────────────────────────────────── */
+:root[data-theme='brutalist'][data-mode='dark'] {
+  color-scheme: dark;
+  --bg: #0b0b0b;
+  --bg-2: #000000;
+  --surface: #121212;
+  --surface-2: #191919;
+  --line: #2c2c2c;
+  --line-strong: #444444;
+  --text: #f4f4f4;
+  --muted: #a0a0a0;
+  --faint: #6a6a6a;
+  --accent: #ff4133;
+  --accent-dim: #d8362b;
+  --accent-glow: transparent;
+  --violet: #c061f5;
+  --good: #37d367;
+  --warn: #ffd60a;
+  --danger: #ff4133;
+  --radius: 0px;
+  --radius-sm: 0px;
+  --border-w: 2px;
+  --panel-blur: 0px;
+  --shadow: none;
+  --glow: none;
+  --grid-opacity: 0;
+  --bracket-opacity: 0;
+  --halo-opacity: 0;
+  --bracket-color: var(--line-strong);
+  --grad-from: var(--text);
+  --grad-to: var(--text);
+  --font-body: var(--font-display);
+}
+/* ── BRUTALIST · light ─────────────────────────────────────────────────────── */
+:root[data-theme='brutalist'][data-mode='light'] {
+  color-scheme: light;
+  --bg: #ffffff;
+  --bg-2: #f1f1f1;
+  --surface: #ffffff;
+  --surface-2: #f6f6f6;
+  --line: #141414;
+  --line-strong: #000000;
+  --text: #0a0a0a;
+  --muted: #404040;
+  --faint: #6f6f6f;
+  --accent: #e0301e;
+  --accent-dim: #b8281a;
+  --accent-glow: transparent;
+  --violet: #7c3aed;
+  --good: #15803d;
+  --warn: #b45309;
+  --danger: #dc2626;
+  --radius: 0px;
+  --radius-sm: 0px;
+  --border-w: 2px;
+  --panel-blur: 0px;
+  --shadow: none;
+  --glow: none;
+  --grid-opacity: 0;
+  --bracket-opacity: 0;
+  --halo-opacity: 0;
+  --bracket-color: var(--line-strong);
+  --grad-from: var(--text);
+  --grad-to: var(--text);
+  --font-body: var(--font-display);
+}
+
+/* ── NORD · dark (Polar Night / Frost / Snow) ──────────────────────────────── */
+:root[data-theme='nord'][data-mode='dark'] {
+  color-scheme: dark;
+  --bg: #2e3440;
+  --bg-2: #272c36;
+  --surface: #3b4252;
+  --surface-2: #434c5e;
+  --line: #434c5e;
+  --line-strong: #4c566a;
+  --text: #eceff4;
+  --muted: #d8dee9;
+  --faint: #7b88a1;
+  --accent: #88c0d0;
+  --accent-dim: #81a1c1;
+  --accent-glow: rgba(136, 192, 208, 0.35);
+  --violet: #b48ead;
+  --good: #a3be8c;
+  --warn: #ebcb8b;
+  --danger: #bf616a;
+  --radius: 10px;
+  --radius-sm: 8px;
+  --panel-blur: 0px;
+  --shadow: 0 12px 32px -22px rgba(0, 0, 0, 0.6);
+  --glow: none;
+  --grid-opacity: 0;
+  --bracket-opacity: 0;
+  --halo-opacity: 0;
+  --bracket-color: var(--line-strong);
+  --grad-from: var(--text);
+  --grad-to: var(--accent);
+  --font-display: var(--font-body);
+}
+/* ── NORD · light (Snow Storm) ─────────────────────────────────────────────── */
+:root[data-theme='nord'][data-mode='light'] {
+  color-scheme: light;
+  --bg: #eceff4;
+  --bg-2: #e5e9f0;
+  --surface: #ffffff;
+  --surface-2: #f4f6fa;
+  --line: #d8dee9;
+  --line-strong: #c2cad8;
+  --text: #2e3440;
+  --muted: #4c566a;
+  --faint: #7b88a1;
+  --accent: #5e81ac;
+  --accent-dim: #81a1c1;
+  --accent-glow: rgba(94, 129, 172, 0.25);
+  --violet: #b48ead;
+  --good: #7d9a5b;
+  --warn: #bb9b4f;
+  --danger: #bf616a;
+  --radius: 10px;
+  --radius-sm: 8px;
+  --panel-blur: 0px;
+  --shadow: 0 12px 30px -24px rgba(46, 52, 64, 0.22);
+  --glow: none;
+  --grid-opacity: 0;
+  --bracket-opacity: 0;
+  --halo-opacity: 0;
+  --bracket-color: var(--line-strong);
+  --grad-from: var(--text);
+  --grad-to: var(--accent);
+  --font-display: var(--font-body);
+}
+
+/* ── SOLAR · dark (Solarized) ──────────────────────────────────────────────── */
+:root[data-theme='solar'][data-mode='dark'] {
+  color-scheme: dark;
+  --bg: #002b36;
+  --bg-2: #00212b;
+  --surface: #073642;
+  --surface-2: #0a4150;
+  --line: rgba(131, 148, 150, 0.16);
+  --line-strong: rgba(131, 148, 150, 0.3);
+  --text: #93a1a1;
+  --muted: #839496;
+  --faint: #657b83;
+  --accent: #268bd2;
+  --accent-dim: #2176b8;
+  --accent-glow: rgba(38, 139, 210, 0.32);
+  --violet: #6c71c4;
+  --good: #859900;
+  --warn: #b58900;
+  --danger: #dc322f;
+  --radius: 8px;
+  --radius-sm: 6px;
+  --panel-blur: 0px;
+  --shadow: 0 12px 30px -22px rgba(0, 0, 0, 0.55);
+  --glow: none;
+  --grid-opacity: 0;
+  --bracket-opacity: 0;
+  --halo-opacity: 0;
+  --bracket-color: var(--line-strong);
+  --grad-from: var(--text);
+  --grad-to: var(--accent);
+}
+/* ── SOLAR · light ─────────────────────────────────────────────────────────── */
+:root[data-theme='solar'][data-mode='light'] {
+  color-scheme: light;
+  --bg: #fdf6e3;
+  --bg-2: #f4ecd8;
+  --surface: #fffbf0;
+  --surface-2: #eee8d5;
+  --line: rgba(101, 123, 131, 0.2);
+  --line-strong: rgba(101, 123, 131, 0.34);
+  --text: #586e75;
+  --muted: #657b83;
+  --faint: #93a1a1;
+  --accent: #268bd2;
+  --accent-dim: #2176b8;
+  --accent-glow: rgba(38, 139, 210, 0.22);
+  --violet: #6c71c4;
+  --good: #859900;
+  --warn: #b58900;
+  --danger: #dc322f;
+  --radius: 8px;
+  --radius-sm: 6px;
+  --panel-blur: 0px;
+  --shadow: 0 12px 28px -24px rgba(88, 110, 117, 0.3);
+  --glow: none;
+  --grid-opacity: 0;
+  --bracket-opacity: 0;
+  --halo-opacity: 0;
+  --bracket-color: var(--line-strong);
+  --grad-from: var(--text);
+  --grad-to: var(--accent);
+}
+
+/* ── PAPER · dark (warm editorial) ─────────────────────────────────────────── */
+:root[data-theme='paper'][data-mode='dark'] {
+  color-scheme: dark;
+  --bg: #1c1917;
+  --bg-2: #141210;
+  --surface: #26221f;
+  --surface-2: #2e2926;
+  --line: rgba(214, 180, 120, 0.14);
+  --line-strong: rgba(214, 180, 120, 0.26);
+  --text: #f5f1ea;
+  --muted: #b9afa2;
+  --faint: #8a7f70;
+  --accent: #d6a35c;
+  --accent-dim: #c08f48;
+  --accent-glow: rgba(214, 163, 92, 0.22);
+  --violet: #b08bd6;
+  --good: #9bb068;
+  --warn: #dcae5e;
+  --danger: #cf6b5a;
+  --radius: 14px;
+  --radius-sm: 12px;
+  --panel-blur: 0px;
+  --shadow: 0 16px 40px -28px rgba(0, 0, 0, 0.5);
+  --glow: none;
+  --grid-opacity: 0;
+  --bracket-opacity: 0;
+  --halo-opacity: 0.22;
+  --bracket-color: var(--line-strong);
+  --grad-from: var(--text);
+  --grad-to: var(--accent);
+  --font-display: ui-serif, 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+}
+/* ── PAPER · light ─────────────────────────────────────────────────────────── */
+:root[data-theme='paper'][data-mode='light'] {
+  color-scheme: light;
+  --bg: #faf7f1;
+  --bg-2: #f1ece2;
+  --surface: #ffffff;
+  --surface-2: #f6f1e8;
+  --line: rgba(120, 100, 70, 0.16);
+  --line-strong: rgba(120, 100, 70, 0.28);
+  --text: #23201c;
+  --muted: #6b6357;
+  --faint: #9a8f7f;
+  --accent: #b27a33;
+  --accent-dim: #9a6628;
+  --accent-glow: rgba(178, 122, 51, 0.18);
+  --violet: #7c5cad;
+  --good: #5a7d2e;
+  --warn: #a9742a;
+  --danger: #b4452f;
+  --radius: 14px;
+  --radius-sm: 12px;
+  --panel-blur: 0px;
+  --shadow: 0 16px 36px -28px rgba(60, 45, 25, 0.22);
+  --glow: none;
+  --grid-opacity: 0;
+  --bracket-opacity: 0;
+  --halo-opacity: 0.18;
+  --bracket-color: var(--line-strong);
+  --grad-from: var(--text);
+  --grad-to: var(--accent);
+  --font-display: ui-serif, 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+}
+
+/* ───────────────────────────── base ───────────────────────────── */
+* {
+  border-color: var(--line);
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* atmospheric glows — strength controlled per theme via --halo-opacity */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  opacity: var(--halo-opacity);
+  background:
+    radial-gradient(60rem 60rem at 78% -10%, var(--accent-glow), transparent 60%),
+    radial-gradient(55rem 50rem at 8% 108%, color-mix(in oklch, var(--violet) 24%, transparent), transparent 60%);
+}
+
+/* grid texture — strength controlled per theme via --grid-opacity */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: radial-gradient(ellipse 120% 90% at 50% 0%, black 30%, transparent 80%);
+  opacity: var(--grid-opacity);
+}
+
+::selection {
+  background: color-mix(in oklch, var(--accent) 30%, transparent);
+  color: var(--text);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--faint);
+  background-clip: content-box;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ───────────────────────────── components ───────────────────────────── */
+@layer components {
+  .panel {
+    background: var(--surface);
+    border: var(--border-w) solid var(--line);
+    border-radius: var(--radius);
+    backdrop-filter: blur(var(--panel-blur));
+    box-shadow: var(--shadow);
+  }
+
+  .panel-2 {
+    background: var(--surface-2);
+    border: var(--border-w) solid var(--line);
+    border-radius: var(--radius-sm);
+  }
+
+  /* tracked-out uppercase readout label */
+  .label {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-size: 0.64rem;
+    color: var(--faint);
+    font-weight: 500;
+  }
+
+  .stat {
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  .text-gradient {
+    background: linear-gradient(120deg, var(--grad-from), var(--grad-to));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* corner-bracket decoration — visible only on themes that opt in (--bracket-opacity) */
+  .brackets {
+    position: relative;
+  }
+  .brackets::before,
+  .brackets::after {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border: 1px solid var(--bracket-color);
+    opacity: var(--bracket-opacity);
+  }
+  .brackets::before {
+    top: 8px;
+    left: 8px;
+    border-right: 0;
+    border-bottom: 0;
+  }
+  .brackets::after {
+    bottom: 8px;
+    right: 8px;
+    border-left: 0;
+    border-top: 0;
+  }
+
+  /* ── topology map: HTML node chips over an SVG edge layer ── */
+  .topo-map {
+    position: relative;
+    width: 100%;
+    margin-inline: auto;
+  }
+  .topo-node {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    cursor: pointer;
+    z-index: 1;
+  }
+  .topo-node[data-dim='true'] {
+    opacity: 0.28;
+  }
+  .topo-node[data-selected='true'] {
+    z-index: 3;
+  }
+  .topo-disc {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: max(8px, var(--radius-sm));
+    color: var(--c);
+    background: color-mix(in oklch, var(--c) 13%, var(--bg-2));
+    border: var(--border-w) solid color-mix(in oklch, var(--c) 50%, transparent);
+    box-shadow:
+      0 10px 24px -14px var(--c),
+      inset 0 0 14px -10px var(--c);
+    transition:
+      transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.18s,
+      border-color 0.18s;
+  }
+  .topo-node:hover .topo-disc {
+    transform: translateY(-2px) scale(1.07);
+    box-shadow:
+      0 0 0 1px var(--c),
+      0 0 22px -3px var(--c);
+  }
+  .topo-node[data-selected='true'] .topo-disc {
+    border-color: var(--c);
+    box-shadow:
+      0 0 0 1.5px var(--c),
+      0 0 30px -4px var(--c);
+  }
+  .topo-disc--cluster {
+    width: 58px;
+    height: 58px;
+  }
+  .topo-disc--center {
+    width: 66px;
+    height: 66px;
+    background: color-mix(in oklch, var(--c) 20%, var(--bg-2));
+  }
+  .topo-status {
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: var(--c);
+    box-shadow: 0 0 8px var(--c);
+    border: 1.5px solid var(--bg-2);
+  }
+  .topo-count {
+    position: absolute;
+    right: -7px;
+    bottom: -7px;
+    min-width: 23px;
+    height: 20px;
+    padding: 0 6px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background: var(--bg);
+    border: 1px solid var(--c);
+    color: var(--text);
+    font: 600 11px var(--font-display);
+    font-variant-numeric: tabular-nums;
+    box-shadow: 0 0 10px -2px var(--c);
+  }
+  .topo-name {
+    max-width: 134px;
+    font:
+      500 11px/1.15 var(--font-display);
+    letter-spacing: 0.02em;
+    color: var(--muted);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .topo-node[data-selected='true'] .topo-name {
+    color: var(--text);
+  }
+  .topo-map[data-compact='true'] .topo-disc {
+    width: 30px;
+    height: 30px;
+  }
+  .topo-map[data-compact='true'] .topo-disc--cluster {
+    width: 36px;
+    height: 36px;
+  }
+  .topo-map[data-compact='true'] .topo-disc--center {
+    width: 40px;
+    height: 40px;
+  }
+  .topo-map[data-compact='true'] .topo-count {
+    min-width: 16px;
+    height: 15px;
+    font-size: 9px;
+    padding: 0 4px;
+    right: -5px;
+    bottom: -5px;
+  }
+}
+
+@layer utilities {
+  .scanlines {
+    background-image: repeating-linear-gradient(0deg, transparent 0, transparent 2px, oklch(0% 0 0 / 0.16) 3px);
+    opacity: var(--bracket-opacity);
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
