@@ -95,18 +95,39 @@ function startHeartbeat(): void {
 
 export async function gatewayStatus(): Promise<GatewayState> {
   const [wanIf, lan] = await Promise.all([detectWan(), detectLan()]);
-  let available = true;
+  const runAs = (() => {
+    try {
+      return os.userInfo().username;
+    } catch {
+      return process.env.USER || undefined;
+    }
+  })();
+  // Helper FILE present is a cheap, always-works check (no sudo). Whether we can
+  // actually *invoke* it via `sudo -n` is a separate, environment-sensitive thing
+  // (right user in sudoers, a usable PATH, NoNewPrivileges off). Report them apart
+  // so the UI can say "installed but not invokable" instead of a wrong "not installed".
+  const installed = fs.existsSync(HELPER);
+  let available = false;
   let helperStatus: string | undefined;
   let ipForward: boolean | undefined;
-  try {
-    helperStatus = await run(['status']);
-    ipForward = /ip_forward=1/.test(helperStatus);
-    if (helperStatus.startsWith('disabled')) mode = 'off';
-  } catch (e) {
-    available = false;
-    helperStatus = e instanceof Error ? e.message : 'helper unavailable';
+  if (!installed) {
+    helperStatus = 'helper not installed — run: sudo bash deploy/install-gateway.sh';
+  } else {
+    try {
+      const out = await run(['status']);
+      available = true;
+      ipForward = /ip_forward=1/.test(out);
+      if (out.startsWith('disabled')) mode = 'off';
+      helperStatus = out;
+    } catch (e) {
+      // File is there but sudo refused — almost always a user mismatch between the
+      // sudoers entry and the user the control plane runs as. Surface both so the
+      // operator can re-run the installer for the right user without guessing.
+      const why = e instanceof Error ? e.message : 'sudo invocation failed';
+      helperStatus = `helper installed but not invokable as '${runAs ?? 'unknown'}': ${why} — re-run: sudo NEXRELM_USER=${runAs ?? '<service-user>'} bash deploy/install-gateway.sh`;
+    }
   }
-  return { available, enabled: mode !== 'off', mode, client, lanSubnet, wan: wan || wanIf, lanIp: lan.ip, ipForward, forwards, dhcpHandoff, helperStatus, error: lastError };
+  return { available, installed, runAs, enabled: mode !== 'off', mode, client, lanSubnet, wan: wan || wanIf, lanIp: lan.ip, ipForward, forwards, dhcpHandoff, helperStatus, error: lastError };
 }
 
 export async function enableGateway(clientCidr: string): Promise<GatewayState> {

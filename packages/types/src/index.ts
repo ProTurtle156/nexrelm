@@ -1463,8 +1463,12 @@ export interface NetworkPosture {
 export type GatewayMode = 'off' | 'device' | 'lan';
 
 export interface GatewayState {
-  /** helper installed + sudo works. */
+  /** the root helper can actually be invoked (file present AND sudo -n works). */
   available: boolean;
+  /** the helper file exists on disk — install ran, even if sudo can't reach it yet. */
+  installed: boolean;
+  /** OS user the control plane runs as — must match the install-gateway sudoers entry. */
+  runAs?: string;
   enabled: boolean;
   /** off · pilot one device (inline) · be the LAN gateway (whole subnet). */
   mode: GatewayMode;

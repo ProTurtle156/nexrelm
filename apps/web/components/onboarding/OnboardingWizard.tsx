@@ -209,6 +209,13 @@ function StepIntegration({ data, mode, setMode, act, busy }: { data: OnboardingS
                 >
                   {data.posture.gateway.enabled ? `gateway active (${data.posture.gateway.mode})` : 'Enable LAN gateway'}
                 </button>
+              ) : data.posture.gateway.installed ? (
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[0.7rem] text-faint">
+                    The helper is installed but the control plane{data.posture.gateway.runAs ? <> (user <span className="text-muted">{data.posture.gateway.runAs}</span>)</> : ''} can’t invoke it via sudo. Re-run on the server:
+                  </span>
+                  <CommandLine cmd={`sudo NEXRELM_USER=${data.posture.gateway.runAs || '<service-user>'} bash deploy/install-gateway.sh`} small />
+                </div>
               ) : (
                 <div className="flex flex-col gap-1.5">
                   <span className="text-[0.7rem] text-faint">The routing helper isn't installed yet. Run on the server:</span>

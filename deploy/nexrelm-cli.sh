@@ -171,15 +171,39 @@ cmd_rebuild() {
 cmd_uninstall() {
   require_root
   local purge=0; for a in "$@"; do [ "$a" = "--purge" ] && purge=1; done
-  confirm "Uninstall Nexrelm (stop+disable service, remove the 'nexrelm' command${purge:+, and PURGE all data})?" || { say "aborted"; exit 1; }
+  confirm "Uninstall Nexrelm — stop+disable both services, remove units, the 'nexrelm' command, and the inline-gateway helper+sudoers${purge:+, and DELETE all data}?" || { say "aborted"; exit 1; }
+
+  # Resolve the data dir FIRST — it may be customised via the drop-in we're about
+  # to delete, so reading it afterwards would wrongly fall back to the default.
+  local dd; dd="$(data_dir)"
+
+  # 1) both services: control plane + web GUI
   systemctl disable --now "$SERVICE" >/dev/null 2>&1 || true
+  systemctl disable --now nexrelm-web >/dev/null 2>&1 || true
+
+  # 2) unit files + the data-dir drop-in (and its now-empty directory)
   rm -f "$DROPIN"; rmdir "$(dirname "$DROPIN")" 2>/dev/null || true
-  rm -f /etc/systemd/system/${SERVICE}.service
+  rm -f "/etc/systemd/system/${SERVICE}.service" /etc/systemd/system/nexrelm-web.service
   systemctl daemon-reload || true
-  if [ "$purge" = "1" ]; then
-    local dd; dd="$(data_dir)"; [ -e "$dd" ] && { mv "$dd" "${dd%/}.uninstalled-$(date +%Y%m%d-%H%M%S)"; ok "data moved aside (not deleted)"; }
-  else say "  ${D}data kept at $(data_dir) and the repo at $NEXRELM_DIR${NC}"; fi
+  ok "services stopped + disabled, unit files removed"
+
+  # 3) inline-gateway: revert routing, then remove the helper AND its NOPASSWD
+  #    sudoers grant — leaving that entry behind would be a standing privilege hole.
+  if [ -x /usr/local/sbin/nexrelm-gateway ]; then /usr/local/sbin/nexrelm-gateway disable >/dev/null 2>&1 || true; fi
+  if [ -e /usr/local/sbin/nexrelm-gateway ] || [ -e /etc/sudoers.d/nexrelm-gateway ]; then
+    rm -f /usr/local/sbin/nexrelm-gateway /etc/sudoers.d/nexrelm-gateway
+    ok "inline-gateway helper + sudoers removed (routing reverted)"
+  fi
+
+  # 4) the CLI launcher
   rm -f /usr/local/bin/nexrelm
+
+  # 5) data (incl. TLS certs under <data>/tls) — deleted only with --purge
+  if [ "$purge" = "1" ]; then
+    [ -e "$dd" ] && { rm -rf "$dd"; ok "all data + TLS certs deleted: $dd"; }
+  else
+    say "  ${D}data kept at $dd and the repo at $NEXRELM_DIR — run 'sudo nexrelm uninstall --purge' to delete the data too${NC}"
+  fi
   ok "uninstalled. Reinstall any time: sudo bash $NEXRELM_DIR/deploy/install-nexrelm.sh"
 }
 

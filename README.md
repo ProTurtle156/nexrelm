@@ -216,6 +216,8 @@ CI runs typecheck + tests + a production build on every push ([`.github/workflow
 
 All state lives in `~/.nexrelm/` (relocate with `nexrelm move-data`). Use `nexrelm backup` / `restore` for snapshots, `nexrelm clear <db>` to wipe one database, and `nexrelm reset` for a full factory reset (it backs up first). Retention windows are configurable in **Settings → Backend**.
 
+To remove Nexrelm completely, `sudo nexrelm uninstall` stops and disables both services, deletes their systemd units, removes the `nexrelm` command, and reverts + removes the inline-gateway helper and its sudoers grant (keeping your data and the repo). Add `--purge` to also delete `~/.nexrelm/` (databases and TLS certs). The inline-gateway helper alone can be removed with `sudo bash deploy/install-gateway.sh --remove`, which reverts routing and resets kernel IP forwarding.
+
 ## Theming
 
 Five themes — **Obsidian** (true black), **Brutalist** (stark, flat), **Nord**, **Solar** (Solarized), **Paper** (warm editorial) — each with light and dark modes. Switch in **Settings → Appearance** or with the topbar toggle.

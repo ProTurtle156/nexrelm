@@ -222,7 +222,7 @@ function GatewayMode({ gw, available, onRefresh }: { gw: GatewayState; available
       <PanelHeader
         label="Mode 4"
         title="Be the gateway (on the path)"
-        hint={onPath ? `ACTIVE · ${gw.mode === 'lan' ? gw.lanSubnet : gw.client} → ${gw.wan}` : available ? 'route traffic through Nexrelm' : 'root helper not installed'}
+        hint={onPath ? `ACTIVE · ${gw.mode === 'lan' ? gw.lanSubnet : gw.client} → ${gw.wan}` : available ? 'route traffic through Nexrelm' : gw.installed ? 'helper installed — sudo unreachable' : 'root helper not installed'}
         right={onPath ? <span className="flex items-center gap-1.5 text-xs text-danger"><Activity size={13} /> routing</span> : <ArrowRightLeft size={16} className="text-accent" />}
       />
       <div className="px-5 pb-3 pt-1">
@@ -233,11 +233,20 @@ function GatewayMode({ gw, available, onRefresh }: { gw: GatewayState; available
       {!available && (
         <div className="mx-5 mb-3 flex items-start gap-2 rounded-lg border border-line bg-[var(--bg-1)] p-3 text-xs text-muted">
           <AlertTriangle size={14} className="mt-0.5 text-warn" />
-          <div>
-            <div className="text-text">Root helper not installed — one-time setup.</div>
-            <pre className="mt-1.5 overflow-x-auto rounded border border-line bg-[var(--bg-0)] p-2 stat text-[0.68rem] text-faint">sudo bash deploy/install-gateway.sh</pre>
-            {gw.helperStatus && <div className="mt-1 break-all stat text-[0.66rem] text-faint">helper: {gw.helperStatus}</div>}
-          </div>
+          {gw.installed ? (
+            <div>
+              <div className="text-text">Helper installed, but the control plane can’t invoke it.</div>
+              <p className="mt-1 text-faint">This is a sudo/permission mismatch — the <code className="stat text-muted">install-gateway.sh</code> sudoers entry must name the user the control plane runs as{gw.runAs ? <> (<span className="stat text-muted">{gw.runAs}</span>)</> : ''}. Re-run on the server:</p>
+              <pre className="mt-1.5 overflow-x-auto rounded border border-line bg-[var(--bg-0)] p-2 stat text-[0.68rem] text-faint">sudo NEXRELM_USER={gw.runAs || '<service-user>'} bash deploy/install-gateway.sh</pre>
+              {gw.helperStatus && <div className="mt-1 break-all stat text-[0.66rem] text-faint">helper: {gw.helperStatus}</div>}
+            </div>
+          ) : (
+            <div>
+              <div className="text-text">Root helper not installed — one-time setup.</div>
+              <pre className="mt-1.5 overflow-x-auto rounded border border-line bg-[var(--bg-0)] p-2 stat text-[0.68rem] text-faint">sudo bash deploy/install-gateway.sh</pre>
+              {gw.helperStatus && <div className="mt-1 break-all stat text-[0.66rem] text-faint">helper: {gw.helperStatus}</div>}
+            </div>
+          )}
         </div>
       )}
 
